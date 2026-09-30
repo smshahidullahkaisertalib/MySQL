@@ -13,6 +13,7 @@ WHERE department IS NOT NULL;
 
 -- Filtering with WHERE
 -- Q4 — Employees in the IT department
+select * from employees where department = 'IT';
 
 Q5 — Employees earning more than ₹80,000
 
