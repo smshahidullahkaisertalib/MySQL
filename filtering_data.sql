@@ -78,3 +78,8 @@ ORDER BY salary DESC
 LIMIT 3;
 
 
+ SELECT * FROM employees;
+
+UPDATE employees
+SET employee_name = "Null Employee"
+WHERE employee_id = 47;
