@@ -36,9 +36,41 @@ WHERE department IN (
     WHERE employment_status = "On Leave"
 );
 
--- Q6 — Find employees who have received bonuses
+-- Q6 — Find employees who have received bonuses - using subquery
+
+SELECT *
+FROM bonuses;
+SELECT *
+FROM employees;
+SELECT e.employee_name, e.department, b.bonus_amount
+FROM employees e
+JOIN bonuses b
+ON e.employee_id = b.employee_id;
+-- --------------------------
+
+SELECT employee_name, department, salary 
+FROM employees
+WHERE employee_id IN(
+    SELECT employee_id
+    FROM bonuses
+);
+-- --------------------------
+SELECT employee_name, department, salary
+FROM employees e
+WHERE EXISTS(
+    SELECT 1 
+    FROM bonuses b
+    WHERE e.employee_id = b.employee_id
+)
+
 
 -- Q7 — Find employees who never received any bonus
+SELECT employee_name, department, salary
+FROM employees 
+WHERE employee_id NOT IN(
+    SELECT employee_id
+    FROM bonuses
+);
 
 -- Q8 — Find employees whose salary is greater than the average salary of their own department
 
