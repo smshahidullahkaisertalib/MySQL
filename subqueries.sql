@@ -71,9 +71,58 @@ WHERE employee_id NOT IN(
     SELECT employee_id
     FROM bonuses
 );
+-- --------------------------
+SELECT employee_name, department, salary
+FROM employees e
+WHERE NOT EXISTS(
+    SELECT 1
+    FROM bonuses b
+    WHERE b.employee_id = e.employee_id
+)
+    
 
 -- Q8 — Find employees whose salary is greater than the average salary of their own department
+SELECT *
+FROM employees
+WHERE salary > (
+    SELECT employee_name, AVG(salary)
+    FROM employees
+    GROUP BY department
+    HAVING salary > AVG(salary)
+)
+
+SELECT *
+FROM employees e
+WHERE salary > (
+    SELECT AVG(salary)
+    FROM employees ep
+    WHERE e.department = ep.department
+)
+
 
 -- Q9 — Find employees who are assigned to at least one project
+SELECT * FROM employees;
+SELECT * FROM employee_projects;
+SELECT *
+FROM employees
+WHERE employee_id IN(
+    SELECT employee_id
+    FROM employee_projects
+);
+
+SELECT *
+FROM employees e
+WHERE EXISTS (
+    SELECT 1
+    FROM employee_projects ep
+    WHERE ep.employee_id = e.employee_id
+)
 
 -- Q10 — Find employees who earn more than their manager
+
+USE employer_database;
+SELECT manager_id, salary
+FROM employees
+WHERE manager_id IS NULL;
+
+SELECT * FROM employees;
