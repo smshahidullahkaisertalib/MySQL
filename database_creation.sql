@@ -70,6 +70,9 @@ INSERT INTO employees (employee_id, employee_name, gender, department, salary, m
 (51, 'Vikas Singh',   'Male',   'Sales',     45000,  4, '2021-11-05', 'Bangalore', 'Karnataka',   'vikas@gmail.com',    'Active'),
 (52, 'Anjali Verma',  'Female', 'Marketing', 60000,  5, '2020-09-17', 'Hyderabad', 'Telangana',   'anjali@gmail.com',   'Active');
 
+
+INSERT INTO employees (employee_id, employee_name, gender, department, salary, manager_id, hire_date, city, state, email, employment_status) VALUES
+(53, 'SM Talib',   'Male',   'IT',        150000, NULL, '2012-03-01', 'Mumbai',    'Maharashtra', 'reignoftalib@gmail.com',   'Active');
 SELECT * FROM employees;
 -- ------------------------------------------------------
 CREATE TABLE bonuses (
