@@ -121,18 +121,13 @@ WHERE EXISTS (
 -- Q10 — Find employees who earn more than their manager
 
 USE employer_database;
+
 SELECT *
-FROM employees e
+FROM employees AS e
 WHERE salary > (
     SELECT m.salary
-    FROM employees m
+    FROM employees AS m
     WHERE m.employee_id = e.manager_id
-);
-
-SELECT e.employee_name AS employee, m.employee_name AS manager
-FROM employees e
-JOIN employees m
-ON m.employee_id = e.manager_id;
+)
 
 
-SELECT * FROM employees;
