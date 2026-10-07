@@ -130,8 +130,12 @@ WHERE salary > (
     WHERE m.employee_id = e.manager_id
 )
 
--- find the highest paid department from each department
+-- Q11 — find the highest paid department from each department
 SELECT *
-FROM employees
-WHERE 
+FROM employees e
+WHERE salary = (
+    SELECT MAX(salary)
+    FROM employees ep
+    WHERE ep.department = e.department
+);
 
