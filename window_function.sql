@@ -73,16 +73,35 @@ FROM
 WHERE salary < next_person_salary;
 
 -- Q10 — Display the salary difference between each employee and the previous employee
-SELECT employee_id, employee_name, 
+SELECT employee_id, employee_name, salary, salary - LAG(salary) OVER(ORDER BY employee_id) As salary_diff
 FROM employees;
 -- Q11 — LAG vs LEAD — side-by-side comparison
 
 -- Q12 — GROUP BY vs PARTITION BY — side-by-side comparison
 
 -- Q13 — Find departments where multiple employees share the same salary rank
+WITH ranked AS 
+            (SELECT employee_id, employee_name, department, salary, DENSE_RANK() OVER(PARTITION BY department ORDER BY salary DESC) AS salary_rank
+            FROM employees
+            WHERE department IS NOT NULL)
+            
+SELECT department, salary_rank, COUNT(*) FROM ranked
+GROUP BY department, salary_rank
+HAVING COUNT(*) > 1;
 
 -- Q14 — Display each employee along with the total salary expense of their department
+SELECT employee_name,department,salary, SUM(salary) OVER(PARTITION BY department) AS salary_expence
+FROM employees
+WHERE department IS NOT NULL AND salary IS NOT NULL;
 
 -- Q15 — Display a running total of salaries within each department
+SELECT employee_id,employee_name, department,salary, SUM(salary) OVER(PARTITION BY department ORDER BY employee_id) AS running_total
+FROM employees
+WHERE department IS NOT NULL AND salary IS NOT NULL;
 
 -- Q16 — Find employees earning more than the average salary of their department
+SELECT *
+FROM (SELECT employee_name,department, salary, AVG(salary) OVER(PARTITION BY department) AS avg_salary
+      FROM employees 
+WHERE department IS NOT NULL) AS salary_table
+WHERE salary > avg_salary;
