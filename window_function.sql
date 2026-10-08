@@ -44,12 +44,37 @@ WHERE department IS NOT NULL;
 
 -- Q7 — Find the highest-paid employee from each department
 
--- Q8 — Find employees earning more than the previous employee
+SELECT *
+FROM (SELECT employee_name,department, salary, DENSE_RANK() OVER(PARTITION BY department ORDER BY salary DESC) AS HR
+    FROM employees
+    WHERE department IS NOT NULL) AS st
+WHERE HR = 1;
 
+SELECT *
+FROM employees e
+WHERE salary = (
+    SELECT MAX(salary)
+    FROM employees ep
+    WHERE ep.department = e.department
+)
+ORDER BY salary DESC;
+
+-- Q8 — Find employees earning more than the previous employee
+SELECT * 
+FROM 
+    (SELECT employee_id, employee_name, salary,LAG(employee_id) OVER(ORDER BY employee_id) as prev_person_id, LAG(employee_name) OVER(ORDER BY employee_id) as prev_person_name, LAG(salary) OVER(ORDER BY employee_id) as prev_person_salary
+    FROM employees) AS salary_table
+WHERE salary > prev_person_salary;
 -- Q9 — Find employees earning less than the next employee
+SELECT *
+FROM 
+    (SELECT employee_id, employee_name, salary, LEAD(employee_name) OVER(ORDER BY employee_id) AS                 next_person_name, LEAD(salary) OVER(ORDER BY employee_id) AS next_person_salary
+    FROM employees) as salary_table
+WHERE salary < next_person_salary;
 
 -- Q10 — Display the salary difference between each employee and the previous employee
-
+SELECT employee_id, employee_name, 
+FROM employees;
 -- Q11 — LAG vs LEAD — side-by-side comparison
 
 -- Q12 — GROUP BY vs PARTITION BY — side-by-side comparison
