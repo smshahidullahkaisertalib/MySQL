@@ -116,4 +116,11 @@ SELECT employee_id, employee_name, department, salary, das
 FROM temp_table
 WHERE salary > das;
 
-
+-- Find employees whose salary is greater than the average salary of their department, and display their department rank.
+-- Subquery version
+SELECT employee_name, department, salary, avg_salary
+FROM (SELECT *,
+    AVG(salary) OVER(PARTITION BY department) AS avg_salary
+    FROM employees
+    WHERE department IS NOT NULL) AS temp_table
+WHERE salary > avg_salary; 
