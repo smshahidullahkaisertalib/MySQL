@@ -152,17 +152,82 @@ FROM subscriptions_s2q4)
 
 SELECT *
 FROM cte
-WHERE customer_id IS NOT NULL;
+WHERE customer_id;
 
 
-
-
-WITH cte as (SELECT customer_id, LAG(plan_type) OVER(PARTITION BY customer_id) AS from_plan, plan_type as to_plan, LAG(end_date) OVER(PARTITION BY customer_id) AS end_date
+SELECT *
+FROM subscriptions_s2q4;
+-- Find customers who downgraded from a paid plan (BASIC/PRO) to the free plan.
+WITH cte as (SELECT 
+    (CASE 
+    WHEN LAG(plan_type) OVER(PARTITION BY customer_id) IN ("BASIC", "PRO") AND plan_type = "free" THEN customer_id  
+    END) AS customer_id,
+     LAG(plan_type) OVER(PARTITION BY customer_id) AS from_plan, plan_type as to_plan, LAG(end_date) OVER(PARTITION BY customer_id) AS end_date
 FROM subscriptions_s2q4)
 
 SELECT *
-FROM cte
-WHERE end_date IS NOT NULL;
+FROM cte;
 
+
+-- Q5 - Find the number of likes, comments, and shares for each post.
+CREATE TABLE posts_s2q5 (
+    post_id INT PRIMARY KEY,
+    user_id INT,
+    post_date DATE
+);
+
+CREATE TABLE engagements_s2q5 (
+    engagement_id INT PRIMARY KEY,
+    post_id INT,
+    engagement_type VARCHAR(10)  -- LIKE, COMMENT, SHARE
+);
+
+INSERT INTO posts_s2q5 VALUES
+(1,101,'2024-06-01'),
+(2,102,'2024-06-02'),
+(3,101,'2024-06-03');
+
+INSERT INTO engagements_s2q5 VALUES
+(1,1,'LIKE'),(2,1,'LIKE'),(3,1,'COMMENT'),(4,1,'SHARE'),
+(5,2,'LIKE'),(6,2,'COMMENT'),(7,2,'COMMENT'),
+(8,3,'LIKE');
+
+
+-- Find the number of likes, comments, and shares for each post.
+-- post_id	likes	comments	shares
+-- 1	    2	    1	        1
+-- 2	    1	    2	        0
+-- 3	    1	    0	        0
+SELECT ps.post_id, SUM(CASE 
+    WHEN engagement_type = "LIKE" THEN 1 
+    ELSE 0 
+END) AS LIKES, SUM(CASE 
+    WHEN engagement_type = "COMMENT" THEN 1 
+    ELSE 0 
+END) AS COMMENTS, SUM(CASE 
+    WHEN engagement_type = "SHARE" THEN 1 
+    ELSE 0 
+END) AS SHARES
+FROM posts_s2q5 AS ps
+JOIN engagements_s2q5 e 
+ON ps.post_id = e.post_id
+GROUP BY ps.post_id;
+
+
+SELECT 
+    ps.post_id, 
+    SUM(CASE WHEN e.engagement_type = 'LIKE' THEN 1 ELSE 0 END) AS Likes, 
+    SUM(CASE WHEN e.engagement_type = 'COMMENT' THEN 1 ELSE 0 END) AS COMMENTS, 
+    SUM(CASE WHEN e.engagement_type = 'SHARE' THEN 1 ELSE 0 END) AS SHARES
+FROM posts_s2q5 AS ps
+JOIN engagements_s2q5 e 
+  ON ps.post_id = e.post_id
+GROUP BY ps.post_id;
+
+
+SELECT *
+FROM posts_s2q5 AS p
+JOIN engagements_s2q5 e 
+ON p.post_id = e.post_id
 
 
